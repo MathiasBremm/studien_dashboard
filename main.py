@@ -14,7 +14,7 @@ class DashboardApp:
 
         # Daten laden und an View übergeben
         daten_dto = controller.lade_dashboard_daten()
-        view.zeige_dashboard(daten_dto)
+        view.zeige_dashboard(daten_dto, controller)
 
 if __name__ == "__main__":
     DashboardApp().start()

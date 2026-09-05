@@ -5,6 +5,7 @@ from domain.studiengang import Studiengang
 class DashboardDatenDTO:
     """DTO zur strukturierten Übergabe aller aufbereiteten UI-Daten."""
 
+    student_name: str
     studiengang_name: str
     ziel_durchschnitt: float
     gesamt_ects: int

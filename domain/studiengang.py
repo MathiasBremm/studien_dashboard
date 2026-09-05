@@ -6,6 +6,7 @@ from domain.semester import Semester
 @dataclass
 class Studiengang:
 
+    student_name: str
     name: str
     gesamt_ects: int
     ziel_durchschnitt: float

@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 from dto.dashboard_daten_dto import DashboardDatenDTO
+from controller.dashboard_controller import DashboardController
 
 # Full-Width Layout erzwingen
 st.set_page_config(
@@ -12,7 +13,7 @@ st.set_page_config(
 class DashboardView:
     """View-Klasse: Zuständig für die exakte Streamlit-Darstellung gemäß Layout-Skizze."""
 
-    def zeige_dashboard(self, daten: DashboardDatenDTO) -> None:
+    def zeige_dashboard(self, daten: DashboardDatenDTO, controller: DashboardController) -> None:
 
         # ---------------------------------------------------------
         # 1. HEADER-BEREICH (Obere Box)
@@ -29,7 +30,7 @@ class DashboardView:
                 )
 
             st.text(
-                f"Student: Mathias Bremm | "
+                f"Student: {daten.student_name} | "
                 f"Aktuelles Semester: {daten.aktuelles_semester}/{daten.letztes_semester} |" 
                 f"Verstrichene Zeit: {daten.verstrichene_zeit_prozent}%"
                 )
@@ -106,34 +107,73 @@ class DashboardView:
             modul_zeilen = []
             for semester in daten.semester_liste:
                 for m in semester.module:
-                    note_str = "-"
-                    versuch_str = "-"
-                    datum_str = "-"
+                    p = m.pruefungsleistungen[-1] if m.pruefungsleistungen else None
 
-                    if m.pruefungsleistungen:
-                        p = m.pruefungsleistungen[-1]
-                        if p.note is not None:
-                            note_str = str(p.note).replace(".", ",")
-                        versuch_str = str(p.versuch)
-                        if p.datum:
-                            datum_str = p.datum.strftime("%d.%m.%Y")
+                    note_val = float(p.note) if (p.note is not None) else None
+                    versuch_val = int(p.versuch) if p else 1
+                    datum_val = p.datum if (p and p.datum) else None
 
                     modul_zeilen.append(
                         {
+                            "Semester": semester.nummer,
                             "Modulcode": m.modul_code,
                             "Modulname": m.name,
                             "ECTS": m.ects,
                             "Status": m.status.value,
-                            "Note": note_str,
-                            "Versuche": versuch_str,
-                            "Abgabe": "-",
-                            "Notendatum": datum_str,
+                            "Note": note_val,
+                            "Versuche": versuch_val,
+                            "Abgabe": None,
+                            "Notendatum": datum_val,
                         }
                     )
 
-            if modul_zeilen:
-                st.dataframe(
-                    pd.DataFrame(modul_zeilen),
-                    use_container_width=True,
-                    hide_index=True,
-                )
+
+            spalten_config = {
+                "Semester": st.column_config.NumberColumn(
+                    "Semester", min_value=1, max_value=9, step=1, format="%d", required=True
+                ),
+                "Modulcode": st.column_config.TextColumn("Modulcode", required=True),
+                "Modulname": st.column_config.TextColumn("Modulname", required=True),
+                "ECTS": st.column_config.NumberColumn(
+                    "ECTS", min_value=1, max_value=50, step=1, format="%d", required=True
+                ),
+                "Note": st.column_config.NumberColumn(
+                    "Note", min_value=1.0, max_value=5.0, step=0.1, format="%.1f"
+                ),
+                "Versuche": st.column_config.NumberColumn(
+                    "Versuche", min_value=0, max_value=9, step=1, format="%d"
+                ),
+                "Abgabe": st.column_config.DateColumn("Abgabe", format="DD.MM.YYYY"),
+                "Notendatum": st.column_config.DateColumn("Notendatum", format="DD.MM.YYYY"),
+                "Status": st.column_config.TextColumn(
+                    "Status", disabled=True, help="Wird beim Speichern automatisch ermittelt."
+                ),
+            }
+
+            df = pd.DataFrame(modul_zeilen)
+
+            edited_df = st.data_editor(
+                df,
+                column_config=spalten_config,
+                use_container_width=True,
+                hide_index=True,
+                num_rows="dynamic",
+                disabled=["Status"],
+    )
+
+            if st.button("Änderungen speichern", type="primary"):
+                    # Status automatisch anhand der Note setzen
+                    def bestimme_status(row) -> str:
+                        if pd.notna(row["Note"]) and row["Note"] is not None:
+                            return "BESTANDEN" if float(row["Note"]) <= 4.0 else "NICHT_BESTANDEN"
+                        if pd.notna(row["Abgabe"]) or pd.notna(row["Notendatum"]):
+                            return "In Bearbeitung"
+                        return "Offen"
+
+                    daten_zum_speichern = edited_df.copy()
+                    daten_zum_speichern["Status"] = daten_zum_speichern.apply(bestimme_status, axis=1)
+
+                    # Übergabe an Controller / Repository
+                    controller.speichere_dashboard_daten(daten_zum_speichern)
+                    st.success("Erfolgreich gespeichert!")
+                    st.rerun()

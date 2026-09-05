@@ -15,6 +15,7 @@ class JsonModulRepository:
         self.dateipfad = Path(dateipfad)
 
     def lade_studiengang(self) -> Studiengang:
+        
         """Lädt den vollständigen Objektbaum aus der JSON-Datei."""
         if not self.dateipfad.exists():
             return Studiengang(name="Nicht definiert")
@@ -24,6 +25,7 @@ class JsonModulRepository:
 
         studiengang = Studiengang(
             name=data.get("studiengang", "Nicht definiert"),
+            student_name=data.get("student_name", "Unbekannt"),
             gesamt_ects=data.get("gesamt_ects", 0),
             ziel_durchschnitt=data.get("ziel_durchschnitt", 0.0),
             ziel_dauer_jahre=data.get("ziel_dauer_jahre", 0.0),
@@ -57,3 +59,40 @@ class JsonModulRepository:
             studiengang.semester_liste.append(semester)
 
         return studiengang
+
+    def speichere_studiengang(self, studiengang: Studiengang) -> None:
+        """Serialisiert den Studiengang-Objektbaum zurück in die JSON-Datei."""
+        daten = {
+            "studiengang": studiengang.name,
+            "student_name": studiengang.student_name,
+            "gesamt_ects": studiengang.gesamt_ects,
+            "ziel_durchschnitt": studiengang.ziel_durchschnitt,
+            "ziel_dauer_jahre": studiengang.ziel_dauer_jahre,
+            "studienbeginn": studiengang.studienbeginn.isoformat(),
+            "semester_liste": [
+                {
+                    "nummer": sem.nummer,
+                    "bezeichnung": sem.bezeichnung,
+                    "module": [
+                        {
+                            "modul_code": m.modul_code,
+                            "name": m.name,
+                            "ects": m.ects,
+                            "status": m.status.name,
+                            "pruefungsleistungen": [
+                                {
+                                    "note": p.note,
+                                    "datum": p.datum.isoformat() if p.datum else None,
+                                    "versuch": p.versuch,
+                                }
+                                for p in m.pruefungsleistungen
+                            ],
+                        }
+                        for m in sem.module
+                    ],
+                }
+                for sem in studiengang.semester_liste
+            ],
+        }
+        with open(self.dateipfad, "w", encoding="utf-8") as f:
+            json.dump(daten, f, indent=4, ensure_ascii=False)

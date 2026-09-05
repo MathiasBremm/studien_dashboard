@@ -28,6 +28,7 @@ class DashboardController:
 
         return DashboardDatenDTO(
 
+            student_name=studiengang.student_name,
             studiengang_name=studiengang.name,
             ziel_durchschnitt=studiengang.ziel_durchschnitt,
             gesamt_ects=studiengang.gesamt_ects,

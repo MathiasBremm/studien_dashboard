@@ -1,4 +1,6 @@
 {
+    
+    "student_name": "Max Mustermann",
     "studiengang": "Bachelor Cyber Security",
     "gesamt_ects": 180,
     "ziel_durchschnitt": 2.0,
@@ -55,7 +57,7 @@
                     "status": "BESTANDEN",
                     "pruefungsleistungen": [
                         {
-                            "note": 1.0,
+                            "note": 1.5,
                             "datum": "2026-09-10",
                             "versuch": 1
                         }
