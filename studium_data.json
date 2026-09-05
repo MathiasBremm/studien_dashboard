@@ -1,0 +1,67 @@
+{
+    "studiengang": "Bachelor Cyber Security",
+    "gesamt_ects": 180,
+    "ziel_durchschnitt": 2.0,
+    "ziel_dauer_jahre": 4.0,
+    "studienbeginn": "2026-03-05",
+    "semester_liste": [
+        {
+            "nummer": 1,
+            "bezeichnung": "1. Semester",
+            "module": [
+                {
+                    "modul_code": "DLBDSOOFPP01",
+                    "name": "Objektorientierte Programmierung mit Python",
+                    "ects": 5,
+                    "status": "BESTANDEN",
+                    "pruefungsleistungen": [
+                        {
+                            "note": 1.9,
+                            "datum": "2026-08-23",
+                            "versuch": 1
+                        }
+                    ]
+                },
+                {
+                    "modul_code": "DLBCSITSA01",
+                    "name": "IT-Sicherheit Architektur",
+                    "ects": 5,
+                    "status": "BESTANDEN",
+                    "pruefungsleistungen": [
+                        {
+                            "note": 1.7,
+                            "datum": "2026-08-26",
+                            "versuch": 1
+                        }
+                    ]
+                },
+                {
+                    "modul_code": "ABCDEFG01",
+                    "name": "Grundlagen Alphabet",
+                    "ects": 5,
+                    "status": "BESTANDEN",
+                    "pruefungsleistungen": [
+                        {
+                            "note": 2.3,
+                            "datum": "2026-09-04",
+                            "versuch": 1
+                        }
+                    ]
+                },
+                {
+                    "modul_code": "HIJKLMN01",
+                    "name": "Fortgeschrittenes Alphabet",
+                    "ects": 5,
+                    "status": "BESTANDEN",
+                    "pruefungsleistungen": [
+                        {
+                            "note": 1.0,
+                            "datum": "2026-09-10",
+                            "versuch": 1
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
