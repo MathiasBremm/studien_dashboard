@@ -45,7 +45,7 @@ class DashboardView:
 
         # Linke Kachel: Notenübersicht
         with col_kachel_links:
-            with st.container(border=True):
+            with st.container(border=True, height=290):
                 # 1. Zeile: Notendurchschnitt (Label links, Wert rechts)
                 col_label1, col_wert1 = st.columns([1.5, 1])
                 with col_label1:
@@ -53,8 +53,9 @@ class DashboardView:
                     st.markdown("### Notendurchschnitt:")
                 with col_wert1:
                     st.metric(
-                        label="",
+                        label="Notendurchschnitt",
                         value=f"{daten.aktueller_durchschnitt:.1f}".replace(".", ","),
+                        label_visibility="collapsed",
                     )
 
                 st.divider()  # Dezente Trennlinie zwischen den Werten
@@ -71,15 +72,16 @@ class DashboardView:
                     st.markdown("### Notentendenz:")
                 with col_wert2:
                     st.metric(
-                        label="",
+                        label="Notentendenz",
                         value=f"{daten.notentrend:.1f}".replace(".", ","),
                         delta=delta,
                         delta_color="normal",
+                        label_visibility="collapsed",
                     )
 
         # Rechte Kachel: Studienfortschritt & ECTS
         with col_kachel_rechts:
-            with st.container(border=True):
+            with st.container(border=True, height=290):
                 st.markdown("### Studienfortschritt:")
                 st.markdown(
                     f"##### Gesamt-ECTS: {daten.absolvierte_ects}/{daten.gesamt_ects}"
@@ -112,6 +114,7 @@ class DashboardView:
                     note_val = float(p.note) if (p.note is not None) else None
                     versuch_val = int(p.versuch) if p else 1
                     datum_val = p.datum if (p and p.datum) else None
+                    abgabe_val = p.abgabe if (p and p.abgabe) else None
 
                     modul_zeilen.append(
                         {
@@ -122,7 +125,7 @@ class DashboardView:
                             "Status": m.status.value,
                             "Note": note_val,
                             "Versuche": versuch_val,
-                            "Abgabe": None,
+                            "Abgabe": abgabe_val,
                             "Notendatum": datum_val,
                         }
                     )
@@ -155,25 +158,15 @@ class DashboardView:
             edited_df = st.data_editor(
                 df,
                 column_config=spalten_config,
-                use_container_width=True,
+                width="stretch",
                 hide_index=True,
                 num_rows="dynamic",
                 disabled=["Status"],
-    )
+                key="modul_editor",
+            )
 
             if st.button("Änderungen speichern", type="primary"):
-                    # Status automatisch anhand der Note setzen
-                    def bestimme_status(row) -> str:
-                        if pd.notna(row["Note"]) and row["Note"] is not None:
-                            return "BESTANDEN" if float(row["Note"]) <= 4.0 else "NICHT_BESTANDEN"
-                        if pd.notna(row["Abgabe"]) or pd.notna(row["Notendatum"]):
-                            return "In Bearbeitung"
-                        return "Offen"
-
-                    daten_zum_speichern = edited_df.copy()
-                    daten_zum_speichern["Status"] = daten_zum_speichern.apply(bestimme_status, axis=1)
-
-                    # Übergabe an Controller / Repository
-                    controller.speichere_dashboard_daten(daten_zum_speichern)
-                    st.success("Erfolgreich gespeichert!")
-                    st.rerun()
+                # Übergabe an Controller / Repository (Statuslogik wird fachlich im Controller/Modul ermittelt)
+                controller.speichere_dashboard_daten(edited_df)
+                st.success("Erfolgreich gespeichert!")
+                st.rerun()

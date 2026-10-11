@@ -18,7 +18,14 @@ class JsonModulRepository:
         
         """Lädt den vollständigen Objektbaum aus der JSON-Datei."""
         if not self.dateipfad.exists():
-            return Studiengang(name="Nicht definiert")
+            return Studiengang(
+                name="Nicht definiert",
+                student_name="Unbekannt",
+                gesamt_ects=180,
+                ziel_durchschnitt=2.0,
+                ziel_dauer_jahre=4.0,
+                studienbeginn=date.today(),
+            )
 
         with open(self.dateipfad, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -49,10 +56,16 @@ class JsonModulRepository:
                         if p_data.get("datum")
                         else None
                     )
+                    abgabe_val = (
+                        datetime.strptime(p_data["abgabe"], "%Y-%m-%d").date()
+                        if p_data.get("abgabe")
+                        else None
+                    )
                     pruefung = Pruefungsleistung(
                         note=p_data.get("note"),
                         datum=datum_val,
                         versuch=p_data.get("versuch", 1),
+                        abgabe=abgabe_val,
                     )
                     modul.fuege_pruefungsleistung_hinzu(pruefung)
                 semester.module.append(modul)
@@ -84,6 +97,7 @@ class JsonModulRepository:
                                     "note": p.note,
                                     "datum": p.datum.isoformat() if p.datum else None,
                                     "versuch": p.versuch,
+                                    "abgabe": p.abgabe.isoformat() if p.abgabe else None,
                                 }
                                 for p in m.pruefungsleistungen
                             ],

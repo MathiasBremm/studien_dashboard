@@ -1,26 +1,10 @@
-from domain.studiengang import Studiengang
+from __future__ import annotations
 from datetime import date
+from typing import Optional
+from domain.studiengang import Studiengang
 
 class NotenService:
     """Service-Klasse für Berechnungen und Auswertungen."""
-
-    def berechne_verstrichene_zeit_prozent(
-        self, studiengang: Studiengang) -> float:
-
-        if not studiengang.studienbeginn or studiengang.ziel_dauer_jahre <= 0:
-            return 0.0
-
-        aktuelles_datum = date.today()
-
-        # Die Dauer muss mit 365.25 gerechnet werden, wegen den Schaltjahren
-        gesamtdauer_tage = studiengang.ziel_dauer_jahre * 365.25
-        vestrichene_tage = (aktuelles_datum - studiengang.studienbeginn).days
-
-        if vestrichene_tage <= 0:
-            return 0.0
-
-        prozent = (vestrichene_tage / gesamtdauer_tage) * 100.0
-        return min(round(prozent, 1), 100.0)
 
     def berechne_gesamtschnitt(self, studiengang: Studiengang) -> float:
         """Berechnet den gewichteten Notendurchschnitt über alle bestandenen Module."""
@@ -43,23 +27,20 @@ class NotenService:
 
     def berechne_notentrend(
         self, studiengang: Studiengang, anzahl: int = 3
-    ) -> float:
+    ) -> tuple[float, Optional[float]]:
         """Berechnet den Durchschnitt der letzten N absolvierten Prüfungen und die Differenz zur vorherigen Periode."""
         alle_pruefungen = []
         for semester in studiengang.semester_liste:
             for modul in semester.module:
                 for p in modul.pruefungsleistungen:
-                    if p.is_bestanden() and p.note is not None:
+                    if p.note is not None:
                         alle_pruefungen.append(p)
 
         if not alle_pruefungen:
             return 0.0, None
 
-        alle_pruefungen.sort(
-            key=lambda p: (
-                p.datum
-            )
-        )
+        # Sortierung nach Datum (falls kein Datum hinterlegt ist, date.min als Fallback)
+        alle_pruefungen.sort(key=lambda p: p.datum or date.min)
 
         noten = [p.note for p in alle_pruefungen]
 
@@ -94,3 +75,21 @@ class NotenService:
             return 0.0
         absolvierte_ects = studiengang.berechne_gesamt_ects()
         return round(absolvierte_ects / aktuelles_semester, 1)
+
+    def berechne_verstrichene_zeit_prozent(
+        self, studiengang: Studiengang) -> float:
+
+        if not studiengang.studienbeginn or studiengang.ziel_dauer_jahre <= 0:
+            return 0.0
+
+        aktuelles_datum = date.today()
+
+        # Die Dauer muss mit 365.25 gerechnet werden, wegen den Schaltjahren
+        gesamtdauer_tage = studiengang.ziel_dauer_jahre * 365.25
+        verstrichene_tage = (aktuelles_datum - studiengang.studienbeginn).days
+
+        if verstrichene_tage <= 0:
+            return 0.0
+
+        prozent = (verstrichene_tage / gesamtdauer_tage) * 100.0
+        return min(round(prozent, 1), 100.0)

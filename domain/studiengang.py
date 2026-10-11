@@ -6,8 +6,8 @@ from domain.semester import Semester
 @dataclass
 class Studiengang:
 
-    student_name: str
     name: str
+    student_name: str
     gesamt_ects: int
     ziel_durchschnitt: float
     ziel_dauer_jahre: float
@@ -20,11 +20,16 @@ class Studiengang:
 
 
     def ermittle_aktuelles_semester(self) -> int:
-        """Gibt die Nummer des aktuell eingetragenen (höchsten) Semesters zurück."""
-        if not self.semester_liste:
+        """Ermittelt das aktuelle Fachsemester basierend auf der Zeit seit Studienbeginn."""
+        if not self.studienbeginn:
             return 1
-        return max(sem.nummer for sem in self.semester_liste)
+        verstrichene_tage = (date.today() - self.studienbeginn).days
+        if verstrichene_tage < 0:
+            return 1
+        # Ein Semester entspricht ca. einem halben Jahr (182.625 Tage)
+        semester = int(verstrichene_tage / (365.25 / 2)) + 1
+        return max(1, semester)
 
-    def ermittle_letztes_geplantes_semester(self) -> float:
-        """Gibt die Anzahl der Semster im Zeitraum der Zieldauer zurück. (ziel_dauer_jahre*2)"""
+    def ermittle_letztes_geplantes_semester(self) -> int:
+        """Gibt die Anzahl der Semester im Zeitraum der Zieldauer zurück (ziel_dauer_jahre * 2)."""
         return int(self.ziel_dauer_jahre * 2)

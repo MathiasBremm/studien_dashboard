@@ -1,11 +1,10 @@
 {
-    
-    "student_name": "Max Mustermann",
     "studiengang": "Bachelor Cyber Security",
+    "student_name": "Max Mustermann",
     "gesamt_ects": 180,
     "ziel_durchschnitt": 2.0,
     "ziel_dauer_jahre": 4.0,
-    "studienbeginn": "2026-03-05",
+    "studienbeginn": "2026-09-05",
     "semester_liste": [
         {
             "nummer": 1,
@@ -18,9 +17,10 @@
                     "status": "BESTANDEN",
                     "pruefungsleistungen": [
                         {
-                            "note": 1.9,
+                            "note": 4.0,
                             "datum": "2026-08-23",
-                            "versuch": 1
+                            "versuch": 1,
+                            "abgabe": "2026-08-20"
                         }
                     ]
                 },
@@ -31,9 +31,10 @@
                     "status": "BESTANDEN",
                     "pruefungsleistungen": [
                         {
-                            "note": 1.7,
+                            "note": 4.0,
                             "datum": "2026-08-26",
-                            "versuch": 1
+                            "versuch": 1,
+                            "abgabe": "2026-08-25"
                         }
                     ]
                 },
@@ -44,9 +45,10 @@
                     "status": "BESTANDEN",
                     "pruefungsleistungen": [
                         {
-                            "note": 2.3,
+                            "note": 4.0,
                             "datum": "2026-09-04",
-                            "versuch": 1
+                            "versuch": 1,
+                            "abgabe": "2026-09-01"
                         }
                     ]
                 },
@@ -57,9 +59,38 @@
                     "status": "BESTANDEN",
                     "pruefungsleistungen": [
                         {
-                            "note": 1.5,
+                            "note": 4.0,
                             "datum": "2026-09-10",
-                            "versuch": 1
+                            "versuch": 1,
+                            "abgabe": "2026-09-08"
+                        }
+                    ]
+                },
+                {
+                    "modul_code": "ffdsfsedafsdafds",
+                    "name": "gfdsgrgrege",
+                    "ects": 10,
+                    "status": "BESTANDEN",
+                    "pruefungsleistungen": [
+                        {
+                            "note": 4.0,
+                            "datum": "2026-09-12",
+                            "versuch": 1,
+                            "abgabe": null
+                        }
+                    ]
+                },
+                {
+                    "modul_code": "hkjghilbfaiobf",
+                    "name": "jkhbfkfaf",
+                    "ects": 5,
+                    "status": "BESTANDEN",
+                    "pruefungsleistungen": [
+                        {
+                            "note": 4.0,
+                            "datum": "2026-09-20",
+                            "versuch": 1,
+                            "abgabe": "2026-09-20"
                         }
                     ]
                 }
