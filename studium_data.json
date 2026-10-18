@@ -1,0 +1,107 @@
+{
+    "studiengang": "Bachelor Cyber Security",
+    "student_name": "Max Mustermann",
+    "gesamt_ects": 180,
+    "ziel_durchschnitt": 2.0,
+    "ziel_dauer_jahre": 4.0,
+    "studienbeginn": "2026-09-05",
+    "semester_liste": [
+        {
+            "nummer": 1,
+            "bezeichnung": "1. Semester",
+            "module": [
+                {
+                    "modul_code": "DLBDSOOFPP01",
+                    "name": "Objektorientierte Programmierung mit Python",
+                    "ects": 5,
+                    "status": "BESTANDEN",
+                    "pruefungsleistungen": [
+                        {
+                            "note": 4.0,
+                            "datum": "2026-08-23",
+                            "versuch": 1,
+                            "abgabe": "2026-08-20"
+                        }
+                    ]
+                },
+                {
+                    "modul_code": "DLBCSITSA01",
+                    "name": "IT-Sicherheit Architektur",
+                    "ects": 5,
+                    "status": "BESTANDEN",
+                    "pruefungsleistungen": [
+                        {
+                            "note": 4.0,
+                            "datum": "2026-08-26",
+                            "versuch": 1,
+                            "abgabe": "2026-08-25"
+                        }
+                    ]
+                },
+                {
+                    "modul_code": "ABCDEFG01",
+                    "name": "Grundlagen Alphabet",
+                    "ects": 5,
+                    "status": "BESTANDEN",
+                    "pruefungsleistungen": [
+                        {
+                            "note": 4.0,
+                            "datum": "2026-09-04",
+                            "versuch": 1,
+                            "abgabe": "2026-09-01"
+                        }
+                    ]
+                },
+                {
+                    "modul_code": "HIJKLMN01",
+                    "name": "Fortgeschrittenes Alphabet",
+                    "ects": 5,
+                    "status": "BESTANDEN",
+                    "pruefungsleistungen": [
+                        {
+                            "note": 4.0,
+                            "datum": "2026-09-10",
+                            "versuch": 1,
+                            "abgabe": "2026-09-08"
+                        }
+                    ]
+                },
+                {
+                    "modul_code": "fdsfdsafsdaf",
+                    "name": "fdsfdsafasdf",
+                    "ects": 5,
+                    "status": "BESTANDEN",
+                    "pruefungsleistungen": [
+                        {
+                            "note": 1.0,
+                            "datum": "2026-10-11",
+                            "versuch": 3,
+                            "abgabe": null
+                        }
+                    ]
+                },
+                {
+                    "modul_code": "fdsf",
+                    "name": "edsadasd",
+                    "ects": 5,
+                    "status": "OFFEN",
+                    "pruefungsleistungen": []
+                },
+                {
+                    "modul_code": "dsadasfdsgas",
+                    "name": "fsdafdsffdsaf",
+                    "ects": 5,
+                    "status": "BESTANDEN",
+                    "pruefungsleistungen": [
+                        {
+                            "note": 1.0,
+                            "datum": "2026-10-22",
+                            "versuch": 2,
+                            "abgabe": "2026-10-20"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
