@@ -7,16 +7,17 @@ from domain.modul_status import ModulStatus
 from domain.pruefungsleistung import Pruefungsleistung
 from domain.semester import Semester
 from domain.studiengang import Studiengang
+from repository.i_modul_repository import IModulRepository
 
-class JsonModulRepository:
+class JsonModulRepository(IModulRepository):
     """Repository zum Laden und Speichern des Studienzustands via JSON."""
 
     def __init__(self, dateipfad: str = "studium_data.json"):
         self.dateipfad = Path(dateipfad)
 
-    def lade_studiengang(self) -> Studiengang:
-        
+    def lade_studiengang(self) -> Studiengang:       
         """Lädt den vollständigen Objektbaum aus der JSON-Datei."""
+
         if not self.dateipfad.exists():
             return Studiengang(
                 name="Nicht definiert",
@@ -75,6 +76,7 @@ class JsonModulRepository:
 
     def speichere_studiengang(self, studiengang: Studiengang) -> None:
         """Serialisiert den Studiengang-Objektbaum zurück in die JSON-Datei."""
+
         daten = {
             "studiengang": studiengang.name,
             "student_name": studiengang.student_name,

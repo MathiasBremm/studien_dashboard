@@ -1,5 +1,8 @@
 import pandas as pd
 import streamlit as st
+
+from datetime import date, datetime
+from dto.modul_eintrag_dto import ModulEintragDTO
 from dto.dashboard_daten_dto import DashboardDatenDTO
 from controller.dashboard_controller import DashboardController
 
@@ -106,17 +109,17 @@ class DashboardView:
         with st.container(border=True):
             st.subheader("Modulübersicht & Prüfungen")
 
-            modul_zeilen = []
+            modul_eintrag = []
             for semester in daten.semester_liste:
                 for m in semester.module:
                     p = m.pruefungsleistungen[-1] if m.pruefungsleistungen else None
 
-                    note_val = float(p.note) if (p.note is not None) else None
+                    note_val = float(p.note) if (p is not None and p.note is not None) else None
                     versuch_val = int(p.versuch) if p else 1
                     datum_val = p.datum if (p and p.datum) else None
                     abgabe_val = p.abgabe if (p and p.abgabe) else None
 
-                    modul_zeilen.append(
+                    modul_eintrag.append(
                         {
                             "Semester": semester.nummer,
                             "Modulcode": m.modul_code,
@@ -153,7 +156,7 @@ class DashboardView:
                 ),
             }
 
-            df = pd.DataFrame(modul_zeilen)
+            df = pd.DataFrame(modul_eintrag)
 
             edited_df = st.data_editor(
                 df,
@@ -166,7 +169,47 @@ class DashboardView:
             )
 
             if st.button("Änderungen speichern", type="primary"):
-                # Übergabe an Controller / Repository (Statuslogik wird fachlich im Controller/Modul ermittelt)
-                controller.speichere_dashboard_daten(edited_df)
+                # DataFrame in neutrale DTO-Liste für den Controller umwandeln
+                dto_module: list[ModulEintragDTO] = []
+                for _, row in edited_df.iterrows():
+                    if pd.isna(row.get("Modulcode")) or pd.isna(row.get("Semester")):
+                        continue
+
+                    note_raw = row.get("Note")
+                    note_val = float(note_raw) if pd.notna(note_raw) and note_raw is not None else None
+                    versuch_raw = row.get("Versuche")
+                    versuch_val = int(versuch_raw) if pd.notna(versuch_raw) and versuch_raw is not None else 1
+
+                    dto_module.append(
+                        ModulEintragDTO(
+                            semester=int(row["Semester"]),
+                            modul_code=str(row.get("Modulcode", "")),
+                            modul_name=str(row.get("Modulname", "")),
+                            ects=int(row.get("ECTS", 5)),
+                            status=str(row.get("Status", "OFFEN")),
+                            note=note_val,
+                            versuche=versuch_val,
+                            abgabe=self._zu_datum(row.get("Abgabe")),
+                            notendatum=self._zu_datum(row.get("Notendatum")),
+                        )
+                    )
+
+                # Neutrale DTOs an Controller übergeben (Controller bleibt frei von pandas)
+                controller.speichere_dashboard_daten(dto_module)
                 st.success("Erfolgreich gespeichert!")
                 st.rerun()
+
+    @staticmethod
+    def _zu_datum(wert) -> Optional[date]:
+        if pd.isna(wert) or wert is None:
+            return None
+        if isinstance(wert, (datetime, pd.Timestamp)):
+            return wert.date()
+        if isinstance(wert, date):
+            return wert
+        if isinstance(wert, str) and wert.strip():
+            try:
+                return datetime.strptime(wert.strip(), "%Y-%m-%d").date()
+            except ValueError:
+                return None
+        return None

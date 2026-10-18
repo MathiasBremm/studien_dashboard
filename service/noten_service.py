@@ -8,6 +8,7 @@ class NotenService:
 
     def berechne_gesamtschnitt(self, studiengang: Studiengang) -> float:
         """Berechnet den gewichteten Notendurchschnitt über alle bestandenen Module."""
+
         gesamt_gewichtete_note = 0.0
         gesamt_ects = 0
 
@@ -29,6 +30,7 @@ class NotenService:
         self, studiengang: Studiengang, anzahl: int = 3
     ) -> tuple[float, Optional[float]]:
         """Berechnet den Durchschnitt der letzten N absolvierten Prüfungen und die Differenz zur vorherigen Periode."""
+
         alle_pruefungen = []
         for semester in studiengang.semester_liste:
             for modul in semester.module:
@@ -62,6 +64,7 @@ class NotenService:
 
     def berechne_ects_soll_tempo(self, studiengang: Studiengang) -> float:
         """Berechnet das Ziel-Tempo in ECTS pro Semester."""
+
         anzahl_semester = studiengang.ziel_dauer_jahre * 2
         if anzahl_semester == 0:
             return 0.0
@@ -71,6 +74,7 @@ class NotenService:
         self, studiengang: Studiengang, aktuelles_semester: int
     ) -> float:
         """Berechnet das bisherige Durchschnittstempo in ECTS pro Semester."""
+
         if aktuelles_semester <= 0:
             return 0.0
         absolvierte_ects = studiengang.berechne_gesamt_ects()
@@ -78,6 +82,7 @@ class NotenService:
 
     def berechne_verstrichene_zeit_prozent(
         self, studiengang: Studiengang) -> float:
+        """Berechnet den Prozentsatz der verstrichenen Zeit im Verhältnis zur geplanten Studiendauer."""        
 
         if not studiengang.studienbeginn or studiengang.ziel_dauer_jahre <= 0:
             return 0.0

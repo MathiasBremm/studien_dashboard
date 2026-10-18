@@ -5,7 +5,7 @@ from typing import Optional
 
 from domain.semester import Semester
 
-@dataclass
+@dataclass(frozen=True)
 class DashboardDatenDTO:
     """DTO zur strukturierten Übergabe aller aufbereiteten UI-Daten."""
 

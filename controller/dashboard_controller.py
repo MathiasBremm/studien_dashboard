@@ -1,20 +1,18 @@
-from __future__ import annotations
-from datetime import date, datetime
-from typing import Optional
-import pandas as pd
 
 from domain.modul import Modul
 from domain.pruefungsleistung import Pruefungsleistung
 from domain.semester import Semester
 from dto.dashboard_daten_dto import DashboardDatenDTO
-from repository.json_modul_repository import JsonModulRepository
+from repository.i_modul_repository import IModulRepository
 from service.noten_service import NotenService
+from dto.modul_eintrag_dto import ModulEintragDTO
+from mapper.modul_mapper import ModulMapper
 
 class DashboardController:
     """Controller zur Orchestrierung zwischen UI, Logik und Datenhaltung."""
 
     def __init__(
-        self, noten_service: NotenService, repository: JsonModulRepository
+        self, noten_service: NotenService, repository: IModulRepository
     ):
         self.noten_service = noten_service
         self.repository = repository
@@ -53,71 +51,22 @@ class DashboardController:
             semester_liste=studiengang.semester_liste,
         )
 
-    def speichere_dashboard_daten(self, daten_df: pd.DataFrame) -> None:
-        """Nimmt die editierten Tabellendaten aus der View und übergibt sie an das Repository zum speichern"""
+    def speichere_dashboard_daten(self, eintraege: list[ModulEintragDTO]) -> None:
         studiengang = self.repository.lade_studiengang()
-
         semester_dict: dict[int, Semester] = {}
 
-        for _, row in daten_df.iterrows():
-            if pd.isna(row.get("Modulcode")) or pd.isna(row.get("Semester")):
+        for zeile in eintraege:
+            if not zeile.modul_code or zeile.semester <= 0:
                 continue
 
-            sem_nr = int(row["Semester"])
-            if sem_nr not in semester_dict:
-                semester_dict[sem_nr] = Semester(
-                    nummer=sem_nr,
-                    bezeichnung=f"{sem_nr}. Semester",
+            if zeile.semester not in semester_dict:
+                semester_dict[zeile.semester] = Semester(
+                    nummer=zeile.semester,
+                    bezeichnung=f"{zeile.semester}. Semester"
                 )
 
-            # Prüfungsdaten extrahieren
-            note_raw = row.get("Note")
-            note_val = float(note_raw) if pd.notna(note_raw) and note_raw is not None else None
+            modul = ModulMapper.dto_zu_modul(zeile)
+            semester_dict[zeile.semester].module.append(modul)
 
-            versuch_raw = row.get("Versuche")
-            versuch_val = int(versuch_raw) if pd.notna(versuch_raw) and versuch_raw is not None else 1
-
-            notendatum_val = self._zu_datum(row.get("Notendatum"))
-            abgabe_val = self._zu_datum(row.get("Abgabe"))
-
-            pruefung = Pruefungsleistung(
-                note=note_val,
-                datum=notendatum_val,
-                versuch=versuch_val,
-                abgabe=abgabe_val,
-            )
-
-            modul = Modul(
-                modul_code=str(row.get("Modulcode", "")),
-                name=str(row.get("Modulname", "")),
-                ects=int(row.get("ECTS", 5)),
-            )
-
-            # Prüfungsleistung anhängen, wenn relevante Angaben vorliegen
-            if note_val is not None or notendatum_val is not None or abgabe_val is not None:
-                modul.fuege_pruefungsleistung_hinzu(pruefung)
-
-            # Fachlogik: Modulstatus aus Prüfungsleistung ermitteln
-            modul.aktualisiere_status()
-
-            semester_dict[sem_nr].module.append(modul)
-
-        # Semester sortieren, im Modell aktualisieren und speichern
         studiengang.semester_liste = sorted(semester_dict.values(), key=lambda s: s.nummer)
         self.repository.speichere_studiengang(studiengang)
-
-    @staticmethod
-    def _zu_datum(wert) -> Optional[date]:
-        """Hilfsmethode: Konvertiert Eingabedaten sicher in ein date-Objekt."""
-        if pd.isna(wert) or wert is None:
-            return None
-        if isinstance(wert, (datetime, pd.Timestamp)):
-            return wert.date()
-        if isinstance(wert, date):
-            return wert
-        if isinstance(wert, str) and wert.strip():
-            try:
-                return datetime.strptime(wert.strip(), "%Y-%m-%d").date()
-            except ValueError:
-                return None
-        return None

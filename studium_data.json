@@ -67,30 +67,37 @@
                     ]
                 },
                 {
-                    "modul_code": "ffdsfsedafsdafds",
-                    "name": "gfdsgrgrege",
-                    "ects": 10,
+                    "modul_code": "fdsfdsafsdaf",
+                    "name": "fdsfdsafasdf",
+                    "ects": 5,
                     "status": "BESTANDEN",
                     "pruefungsleistungen": [
                         {
-                            "note": 4.0,
-                            "datum": "2026-09-12",
-                            "versuch": 1,
+                            "note": 1.0,
+                            "datum": "2026-10-11",
+                            "versuch": 3,
                             "abgabe": null
                         }
                     ]
                 },
                 {
-                    "modul_code": "hkjghilbfaiobf",
-                    "name": "jkhbfkfaf",
+                    "modul_code": "fdsf",
+                    "name": "edsadasd",
+                    "ects": 5,
+                    "status": "OFFEN",
+                    "pruefungsleistungen": []
+                },
+                {
+                    "modul_code": "dsadasfdsgas",
+                    "name": "fsdafdsffdsaf",
                     "ects": 5,
                     "status": "BESTANDEN",
                     "pruefungsleistungen": [
                         {
-                            "note": 4.0,
-                            "datum": "2026-09-20",
-                            "versuch": 1,
-                            "abgabe": "2026-09-20"
+                            "note": 1.0,
+                            "datum": "2026-10-22",
+                            "versuch": 2,
+                            "abgabe": "2026-10-20"
                         }
                     ]
                 }
